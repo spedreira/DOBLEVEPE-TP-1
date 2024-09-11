@@ -143,6 +143,14 @@ Si se pone un label al \verb|lstlisting|, se puede referenciar: Código \ref{cod
 \pred{predSuelto}{parametros}{\paraTodo[unalinea]{variable}{tipo}{algo \implicaLuego expresion}}
 \pred{predSuelto}{parametros}{\existe[unalinea]{variable}{tipo}{algo \yLuego expresion}}
 
+\subsection{cantidadCaminosNSaltos}
+\begin{proc}{cantidadCaminosNSaltos}{\Inout conexión : \TLista{\TLista{\ent}}, \in n : \ent}{tipoRes}
+	\requiere{n > 0 \land conexión = $conexión_{0}$}
+	\requiere{esCuadrada(conexión) \land esDeOrdenUno(conexión)}
+	\asegura{\existe[unalinea]{s}{\TLista{\TLista{\TLista{\ent}}}}{|s| = n \yLuego sonMatricesHastaOrdenN(s, n, $conexión_{0}$) \yLuego conexión = s[|s| - 1]}}
+\end{proc}
 
-
+\pred{esDeOrdenUno}{m : \TLista{\TLista{\ent}}}{\paraTodo[unalinea]{i,j}{\ent}{0 \leq i,j < |m| \implicaLuego m[i][j] = 0 \lor m[i][j] = 1}}
+\pred{sonMatricesHastaOrdenN}{s : \TLista{\TLista{\TLista{\ent}}}, n : \ent, m : \TLista{\TLista{\ent}}}{\paraTodo[unalinea]{i}{\ent}{0 < i < |s| \implicaLuego esProductoDeMatrices(s[i], s[i-1], m)}}
+\pred{esProductoDeMatrices}{m,$m_{1},m_{2}$ : \TLista{\TLista{\ent}}}{\paraTodo[unalinea]{i,j}{\ent}{0 \leq i,j < |m| \implicaLuego m[i][j] = \sum\limits_{k=0}^{|m| - 1} m_{1}[i][k] * m_{2}[k][j]}}
 \end{document}
