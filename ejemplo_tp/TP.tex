@@ -1,0 +1,80 @@
+\documentclass[10pt,a4paper]{article}
+
+\input{AEDmacros}
+\usepackage{caratula}
+
+\titulo{Trabajo práctico 1: Especificación y WP}
+\subtitulo{Segundo cuatrimestre de 2024}
+
+\fecha{\today}
+
+\materia{Algoritmos y Estructuras de Datos}
+\grupo{Grupo DOBLEVEPE}
+
+\integrante{Apellido, Nombre1}{001/01}{email1@dominio.com}
+\integrante{Apellido, Nombre2}{002/01}{email2@dominio.com}
+\integrante{Apellido, Nombre3}{003/01}{email3@dominio.com}
+\integrante{Adra, Sofía Victoria}{004/01}{sofiavictoriaadra@.com}
+% Pongan cuantos integrantes quieran
+
+% Declaramos donde van a estar las figuras
+% No es obligatorio, pero suele ser comodo
+\graphicspath{{../static/}}
+\begin{document}
+
+\maketitle
+
+\section{Especificación}
+\subsection{hayCamino}
+
+\begin{proc}{hayCamino}{\In distancias : \TLista{\TLista{\ent}}, \In desde : \ent, \In hasta : \ent}{Bool}
+    \requiere{esMatrizCuadrada(distancias)\land esSimétrica(distancias) \land diagonalDeCeros(distancias)}
+    \asegura{res = True \iff \existe[unalinea]{s}{\TLista{\ent}}{esUnCamino(s,distancias,desde,hasta}}
+\end{proc}
+
+    \pred{esMatriz}{m : \TLista{\TLista{\ent}}}{\paraTodo[unalinea]{a,b}{\TLista{\ent}}{(a \neq b \land a \in m \land b \in m ) \implica (\longitud a = \longitud b \land \longitud a > 0)}}
+
+    \pred{esMatrizCuadrada}{m : \TLista{\TLista{\ent}}}{esMatriz(m) \land \paraTodo[unalinea]{s}{\TLista{\ent}}{s \in m \implica (\longitud s = \longitud m})}
+
+    \pred{esSimétrica}{m : \TLista{\TLista{\ent}}}{esMatrizCuadrada(m) \yLuego \paraTodo[unalinea]{i,j}{\ent}{0 \leq i,j < \longitud m \implicaLuego (m[i][j] = m[j][i])}}
+
+    \pred{diagonalDeCeros}{m : \TLista{\TLista{\ent}}}{esMatrizCuadrada(m) \yLuego \paraTodo[unalinea]{i}{\ent}{0 \leq i < \longitud m \implicaLuego (m[i][i] = 0)}}
+    
+%Arreglar la longitud de distancias
+    \pred{hayCaminoDirecto}{distancias : \TLista{\TLista{\ent}}, desde : \ent, hasta : \ent}{(0 \leq desde,hasta < \longitud distancias) \yLuego (distancias[desde][hasta] \neq 0)}
+    
+%Arreglar lista vacia
+    \pred {esUnCamino}{s : \TLista{\ent \times \ent}, distancias : \TLista{\TLista{\ent}}, desde : \ent, hasta : \ent}{(s \neq \lvacia) \yLuego (s[0]_0 = desde \land s[\longitud s -1]_1 = hasta) \land \paraTodo[unalinea]{i}{\ent}{0 \leq i < \longitud s -1 \implicaLuego (s[i]_1 = s[i+1]_0)} \land \paraTodo[unalinea]{i}{\ent}{0 \leq i < \longitud s \implicaLuego hayCaminoDirecto(distancias, s[i]_0, s[i]_1)}}
+    
+\subsection{cantidadCaminosNSaltos}
+\begin{proc}{cantidadCaminosNSaltos}{\Inout conexión : \TLista{\TLista{\ent}}, \In n : \ent}{}
+	\requiere {n > 0 \land conexión = $conexión_{0}$}
+	\requiere {esCuadrada(conexión) \land esDeOrdenUno(conexión)}
+	\asegura {\existe[unalinea]{s}{\TLista{\TLista{\TLista{\ent}}}}{|s| = n \yLuego sonMatricesHastaOrdenN(s, n, $conexión_{0}$) \yLuego conexión = s[|s| - 1]}}
+\end{proc}
+
+\pred{esDeOrdenUno}{m : \TLista{\TLista{\ent}}}{\paraTodo[unalinea]{i,j}{\ent}{0 \leq i,j < |m| \implicaLuego m[i][j] = 0 \lor m[i][j] = 1}}
+\pred{sonMatricesHastaOrdenN}{s : \TLista{\TLista{\TLista{\ent}}}, n : \ent, m : \TLista{\TLista{\ent}}}{\paraTodo[unalinea]{i}{\ent}{0 < i < |s| \implicaLuego esProductoDeMatrices(s[i], s[i-1], m)}}
+\pred{esProductoDeMatrices}{m,$m_{1},m_{2}$ : \TLista{\TLista{\ent}}}{\paraTodo[unalinea]{i,j}{\ent}{0 \leq i,j < |m| \implicaLuego m[i][j] = \sum\limits_{k=0}^{|m| - 1} m_{1}[i][k] * m_{2}[k][j]}}
+
+\subsection{caminoMinimo}
+
+\begin{proc}{caminoMinimo}{\In origen : \ent, \In destino: \ent, \In distancias : \TLista{\TLista{\ent}}}{\TLista{\ent}}
+	
+	%    Requiere del ejercicio
+	\requiere{esMatrizCuadrada(distancias) \land esSimetrica(distancias) \land todosNoNegativos(distancias) \\ \land diagonalDeCeros(distancias)}
+	
+	% Asegura de mi ejercicio
+	\asegura{res \neq  <> \iff (\existe[unalinea]{s}{\TLista{\ent \times \ent}}{esElCaminoMinimo(s, distancias, origen, destino) \land (res[0] = s[0] _0) \land (res[|res| - 1] = s[|s|-1] _1) \land \paraTodo[unalinea]{i}{\ent}{0 \leq i < |s| - 1 \implicaLuego res[i+1] = s[i] _1}})}
+	
+\end{proc}
+% Funcion auxiliar sumaDistancias
+%Arreglar suma
+\aux{sumaDistancias}{s: \TLista{\ent \times \ent}}{\ent}{$\sum_{i = 0}^{|s|-1}$ s[i]_0 + s[i]_1}
+
+% Predicado esElCaminoMinimo
+\pred{esElCaminoMinimo}{s: \TLista{\ent \times \ent}, distancias: \TLista{\TLista{\ent}, origen: \ent, destino: \ent}}{(esUnCamino(s, distancias, origen, destino)) \land \paraTodo[unalinea]{i}{\TLista{\ent \times \ent}}{esUnCamino(i, distancias, origen, destino) \implicaLuego sumaDistancias(s) \leq sumaDistancias(i)}}
+
+\pred{todosNoNegativos}{m: \TLista{\TLista{\ent}}}{\paraTodo[unalinea]{s}{\TLista{\ent}}{s \in m \implica (\paraTodo[unalinea]{n}{\ent}{n \in s \implica n \geq 0)}}}
+
+\end{document}
