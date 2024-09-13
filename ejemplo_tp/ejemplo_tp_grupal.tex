@@ -153,4 +153,22 @@ Si se pone un label al \verb|lstlisting|, se puede referenciar: Código \ref{cod
 \pred{esDeOrdenUno}{m : \TLista{\TLista{\ent}}}{\paraTodo[unalinea]{i,j}{\ent}{0 \leq i,j < |m| \implicaLuego m[i][j] = 0 \lor m[i][j] = 1}}
 \pred{sonMatricesHastaOrdenN}{s : \TLista{\TLista{\TLista{\ent}}}, n : \ent, m : \TLista{\TLista{\ent}}}{\paraTodo[unalinea]{i}{\ent}{0 < i < |s| \implicaLuego esProductoDeMatrices(s[i], s[i-1], m)}}
 \pred{esProductoDeMatrices}{m,$m_{1},m_{2}$ : \TLista{\TLista{\ent}}}{\paraTodo[unalinea]{i,j}{\ent}{0 \leq i,j < |m| \implicaLuego m[i][j] = \sum\limits_{k=0}^{|m| - 1} m_{1}[i][k] * m_{2}[k][j]}}
+
+% Ejercicio 5 caminoMinimo Bermu
+\subsection{caminoMinimo}
+
+\begin{proc}{caminoMinimo}{\In origen : \ent, \In destino: \ent,\In distancias : \TLista{\TLista{\ent}}}{\TLista{\ent}}
+	
+	%    Requiere del ejercicio
+	\requiere{esMatrizCuadrada(distancias) \land esSimetrica(distancias) \land todosNoNegativos(distancias) \\ \land diagonalDeCeros(distancias)}
+	
+	% Asegura de mi ejercicio
+	\asegura{res \neq  <> \iff (\existe[unalinea]{s}{\TLista{\ent \times \ent}}{esElCaminoMinimo(s, distancias, origen, destino) \land (res[0] = s[0] _0) \land (res[|res| - 1] = s[|s|-1] _1) \land \paraTodo[unalinea]{i}{\ent}{0 \leq i < |s| - 1 \implicaLuego res[i+1] = s[i] _1}})}
+	
+\end{proc}
+% Funcion auxiliar sumaDistancias
+\aux{sumaDistancias}{s: \TLista{\ent \times \ent}}{\ent}{$\sum_{i = 0}^{|s|-1}$ s[i]_0 + s[i]_1}
+
+% Predicado esElCaminoMinimo
+\pred{esElCaminoMinimo}{s: \TLista{\ent \times \ent}, distancias: \TLista{\TLista{\ent}, origen: \ent, destino: \ent}}{(esUnCamino(s, distancias, origen, destino)) \land \paraTodo[unalinea]{i}{\TLista{\ent \times \ent}}{esUnCamino(i, distancias, origen, destino) \implicaLuego sumaDistancias(s) \leq sumaDistancias(i)}} 
 \end{document}
