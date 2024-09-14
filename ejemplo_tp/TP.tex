@@ -11,10 +11,10 @@
 \materia{Algoritmos y Estructuras de Datos}
 \grupo{Grupo DOBLEVEPE}
 
-\integrante{Apellido, Nombre1}{001/01}{email1@dominio.com}
-\integrante{Apellido, Nombre2}{002/01}{email2@dominio.com}
-\integrante{Apellido, Nombre3}{003/01}{email3@dominio.com}
-\integrante{Adra, Sofía Victoria}{004/01}{sofiavictoriaadra@.com}
+\integrante{Adra, Sofía Victoria}{71/24}{sofiavictoriaadra@gmail.com}
+\integrante{Bermudez, Lucas Oscar}{124/24}{lucas.bermudez135@gmail.com}
+\integrante{Pedreira, Santiago}{306/23}{spedreira.business@gmail.com}
+\integrante{Troncoso, Fabian Lihuel}{379/24}{lihueltroncoso@gmail.com}
 % Pongan cuantos integrantes quieran
 
 % Declaramos donde van a estar las figuras
@@ -25,6 +25,28 @@
 \maketitle
 
 \section{Especificación}
+\subsection{grandesCiudades}
+\begin{proc}{grandesCiudades}{\In ciudades : \TLista{Ciudad}}{\TLista{Ciudad}}
+    \requiere{True}
+    \asegura{\paraTodo[unalinea]{x}{Ciudad}{x \in res \implica x \in ciudades \land x.habitantes > 50000 }}
+\end{proc}
+
+
+\subsection{sumaDeHabitantes}
+\begin{proc}{sumaDeHabitantes}{\In menoresDeCiudades : \TLista{Ciudad}, \In mayoresDeCiudades : \TLista{Ciudad}}{\TLista{Ciudad}}
+    \requiere{|menoresDeCiudades| = |mayoresDeCiudades| }
+    \requiere{tienenMismosNombres(menoresDeCiudades, mayoresDeCiudades)}
+    \asegura{|res| = |menoresDeCiudades|}
+    \asegura{ tienenMismosNombres(res, menoresDeCiudades) }
+    \asegura{\paraTodo[unalinea]{x}{Ciudad}{x \in res \implica \existe[unalinea]{i,j}{Ciudad}{i \in menoresDeCiudad \land  j \in mayoresDeCiudad} \land  x.nombre = i.nombre = j.nombre \land  x.habitantes = i.habitantes + j.habitantes}}}
+\end{proc}
+
+\pred{tienenMismosNombres}{ciudades1,ciudades2 : \TLista{Ciudad}}{\paraTodo[unalinea]{c}{Ciudad}{esCiudad(c,ciudades1) \iff esCiudad(c,ciudades2)}}
+
+\pred{esCiudad}{c : Ciudad, ciudades : \TLista{Ciudad}}{\existe[unalinea]{e}{Ciudad}{e \in ciudades \land e.nombre = c.nombre}}
+
+
+
 \subsection{hayCamino}
 
 \begin{proc}{hayCamino}{\In distancias : \TLista{\TLista{\ent}}, \In desde : \ent, \In hasta : \ent}{Bool}
@@ -41,15 +63,15 @@
     \pred{diagonalDeCeros}{m : \TLista{\TLista{\ent}}}{esMatrizCuadrada(m) \yLuego \paraTodo[unalinea]{i}{\ent}{0 \leq i < \longitud m \implicaLuego (m[i][i] = 0)}}
     
 %Arreglar la longitud de distancias
-    \pred{hayCaminoDirecto}{distancias : \TLista{\TLista{\ent}}, desde : \ent, hasta : \ent}{(0 \leq desde,hasta < \longitud distancias) \yLuego (distancias[desde][hasta] \neq 0)}
+    \pred{hayCaminoDirecto}{distancias : \TLista{\TLista{\ent}}, desde : \ent, hasta : \ent}{(0 \leq desde,hasta < \longitud {distancias}) \yLuego (distancias[desde][hasta] \neq 0)}
     
 %Arreglar lista vacia
-    \pred {esUnCamino}{s : \TLista{\ent \times \ent}, distancias : \TLista{\TLista{\ent}}, desde : \ent, hasta : \ent}{(s \neq \lvacia) \yLuego (s[0]_0 = desde \land s[\longitud s -1]_1 = hasta) \land \paraTodo[unalinea]{i}{\ent}{0 \leq i < \longitud s -1 \implicaLuego (s[i]_1 = s[i+1]_0)} \land \paraTodo[unalinea]{i}{\ent}{0 \leq i < \longitud s \implicaLuego hayCaminoDirecto(distancias, s[i]_0, s[i]_1)}}
+    \pred {esUnCamino}{s : \TLista{\ent \times \ent}, distancias : \TLista{\TLista{\ent}}, desde : \ent, hasta : \ent}{(s \neq \listavacia) \yLuego (s[0]_0 = desde \land s[\longitud s -1]_1 = hasta) \land \paraTodo[unalinea]{i}{\ent}{0 \leq i < \longitud s -1 \implicaLuego (s[i]_1 = s[i+1]_0)} \land \paraTodo[unalinea]{i}{\ent}{0 \leq i < \longitud s \implicaLuego hayCaminoDirecto(distancias, s[i]_0, s[i]_1)}}
     
 \subsection{cantidadCaminosNSaltos}
 \begin{proc}{cantidadCaminosNSaltos}{\Inout conexión : \TLista{\TLista{\ent}}, \In n : \ent}{}
 	\requiere {n > 0 \land conexión = $conexión_{0}$}
-	\requiere {esCuadrada(conexión) \land esDeOrdenUno(conexión)}
+	\requiere {esMatrizCuadrada(conexión) \land esDeOrdenUno(conexión)}
 	\asegura {\existe[unalinea]{s}{\TLista{\TLista{\TLista{\ent}}}}{|s| = n \yLuego sonMatricesHastaOrdenN(s, n, $conexión_{0}$) \yLuego conexión = s[|s| - 1]}}
 \end{proc}
 
@@ -65,7 +87,7 @@
 	\requiere{esMatrizCuadrada(distancias) \land esSimetrica(distancias) \land todosNoNegativos(distancias) \\ \land diagonalDeCeros(distancias)}
 	
 	% Asegura de mi ejercicio
-	\asegura{res \neq  <> \iff (\existe[unalinea]{s}{\TLista{\ent \times \ent}}{esElCaminoMinimo(s, distancias, origen, destino) \land (res[0] = s[0] _0) \land (res[|res| - 1] = s[|s|-1] _1) \land \paraTodo[unalinea]{i}{\ent}{0 \leq i < |s| - 1 \implicaLuego res[i+1] = s[i] _1}})}
+	\asegura{res \neq  \listavacia \iff (\existe[unalinea]{s}{\TLista{\ent \times \ent}}{esElCaminoMinimo(s, distancias, origen, destino) \land (res[0] = s[0] _0) \land (res[|res| - 1] = s[|s|-1] _1) \land \paraTodo[unalinea]{i}{\ent}{0 \leq i < |s| - 1 \implicaLuego res[i+1] = s[i] _1}})}
 	
 \end{proc}
 % Funcion auxiliar sumaDistancias
