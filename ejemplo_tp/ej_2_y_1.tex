@@ -1,0 +1,249 @@
+\documentclass[50pt,a4paper]{article}
+
+\input{AEDmacros}
+\usepackage{caratula}
+\usepackage{mathtools}
+
+\graphicspath{{../static/}}
+
+% Defino las variables aca para reutilizar mas adelante
+\newcommand{\invariante}[1]{0 \leq #1 \leq |ciudades| \yLuego res = \sum\limits_{j=0}^{#1 - 1} ciudades[j].habitantes}
+
+\begin{document}
+
+\section{Especificación}
+
+
+\section{Demostraciones de correctitud}
+\subsection{Introducción}
+
+Para demostrar la correctitud del programa en base a la especificación, se utilizará la lógica de la tripla de Hoare:
+\begin{align*}
+    \{P\} S \{Q\}
+    \shortintertext{\parbox{\textwidth}{\centering \textit {\footnotesize {Donde P es la precondición del programa, S el programa y Q la postcondición.}}}}
+\end{align*}
+\indent
+En esta lógica, S es correcto para P y Q si y sólo si P implica la precondicion más débil de S para Q.
+Es decir:
+\begin{align*}
+    \{P\} S \{Q\} \iff P \implica WP(S, Q)
+\end{align*}
+\indent
+Como el programa contiene un ciclo, para simplificar la demostración, se dividirá en tres partes.
+En primer lugar, se comprobará que: 
+\begin{align}
+    P \implica WP(S_{1}, Pc)
+    \label{eq:1}
+    \shortintertext{\parbox{\textwidth}{\centering \textit {\footnotesize {Donde P es la precondición del programa, $S_{1}$ la parte del programa previa al ciclo y Pc la precondición del ciclo.}}}} \notag
+\end{align}
+\indent
+Luego:
+\begin{align}
+    Pc \implica WP(Sc, Qc)
+    \label{eq:2}
+    \shortintertext{\parbox{\textwidth}{\centering \textit {\footnotesize {Donde Pc es la precondición del ciclo, Sc la parte del programa a ejecutar dentro del ciclo y Qc la postcondición del ciclo.}}}} \notag
+\end{align}
+\indent
+Y finalmente:
+\begin{align}
+    Qc \implica WP(S_{2}, Q)
+    \label{eq:3}
+    \shortintertext{\parbox{\textwidth}{\centering \textit {\footnotesize {Donde Qc es la postcondición del ciclo, $S_{2}$ la parte del programa posterior al ciclo y Q la postcondición del programa.}}}} \notag
+\end{align}
+\indent
+Se definen las variables P, Q, Pc, Qc, I, B y la función Fv, que serán utilizadas a lo largo de la demostración:
+\begin{align*}
+    P &= \{ \existe[unalinea]{j}{\ent}{0 \leq i < |ciudades| \yLuego ciudades[j]}\\
+    &\land \paraTodo[unalinea]{j}{\ent}{0 \leq j < |ciudades| \implicaLuego ciudades[j].habitantes \geq 0}\\
+    &\land \paraTodo[unalinea]{k, h}{\ent}{0 \leq k < h < |ciudades| \implicaLuego ciudades[k].nombre \neq ciudades[h].nombre} \}\\
+    Q &= \{ res = \sum\limits_{j=0}^{|ciudades| - 1} ciudades[j].habitantes \land i = |ciudades| \}\\
+    Pc &= \{ res = 0 \land i = 0 \}\\
+    Qc &= \{ res = \sum\limits_{j=0}^{|ciudades| - 1} ciudades[j].habitantes \land i = |ciudades| \}\\
+    I &= \{\invariante{i}\}\\
+    B &= \{ i < |ciudades| \}\\
+    Fv(i) &= |ciudades| - i
+\end{align*}
+\newpage
+\subsection{Demostración}
+
+Comenzamos probando (1):
+\begin{align*}
+    P &\implica WP(res:=0;i:=0, Pc)\\
+    &\qquad\qquad\iff \text{por axioma 3}\\
+    P &\implica WP(res:=0, WP(i:=0, Pc))\\
+    &\qquad\qquad\iff\\
+    P &\implica WP(res:=0, WP(i:=0, \{ res = 0 \land i = 0 \}))\\
+    &\qquad\qquad\iff \text{por axioma 1}\\
+    P &\implica WP(res:=0, \{ def(0) \yLuego  Pc_0^i \})\\
+    &\qquad\qquad\iff\\
+    P &\implica WP(res:=0, \{ def(0) \yLuego  res = 0 \land 0 = 0 \})\\
+    &\qquad\qquad\iff\\
+    P &\implica WP(res:=0, \{ true \yLuego res = 0 \land 0 = 0 \})\\
+    &\qquad\qquad\iff\\
+    P &\implica WP(res:=0, \{ res = 0 \land true \})\\
+    &\qquad\qquad\iff\\
+    P &\implica WP(res:=0, \{ res = 0 \})\\
+    q &= \{ res = 0 \}\\
+    &\qquad\qquad\iff \text{por axioma 1}\\
+    P &\implica WP(res:=0, \{ def(0) \yLuego  q_0^{res} \})\\
+    &\qquad\qquad\iff\\
+    P &\implica \{ true \land 0 = 0 \}\\
+    &\qquad\qquad\iff\\
+    P &\implica \{ true \}\\
+    \shortintertext{\parbox{\textwidth}{\centering \small {Que es tautología, por lo que queda probado.}}} \notag
+\end{align*}
+\indent
+Continuamos con (3):
+\begin{align*}
+    Qc &\implica Q
+    \shortintertext{\parbox{\textwidth}{\centering \small {Y esto vale porque Qc es igual a Q}}} \notag
+\end{align*}
+\indent
+Finalmente (2) se demostrará con la correctitud del ciclo, primero con el teorema del invariante y luego con el teorema de terminación del ciclo.\\
+\indent
+Teorema del invariante:\\
+\begin{align*}
+    &a.\quad Pc \implica I\\
+    &b.\quad \{ I \land B \} \quad Sc \quad \{ I \}\\
+    &c.\quad I \land \neg B \implica Qc\\
+\end{align*}
+\indent
+La proposición (a), se prueba de la siguiente manera:
+\begin{align*}  % pensar si cambiamos los equiv por iff
+    &\{ res = 0 \land i = 0 \} \implica \{\invariante{i}\} \equiv \\
+    \shortintertext{\parbox{\textwidth}{\centering \small {Se toma Pc verdadero, entonces res = 0 y i = 0 valen para I}}} \notag
+    &\equiv\{ res = 0 \land i = 0 \} \implica \{ \invariante{0} \} \equiv\\
+    \shortintertext{\parbox{\textwidth}{\centering \small {El rango negativo para la sumatoria la reduce a 0}}} \notag
+    &\equiv\{ res = 0 \land i = 0 \} \implica \{ 0 = 0 \leq |ciudades| \yLuego 0 = 0 \} \equiv\\
+    &\equiv\{ res = 0 \land i = 0 \} \implica \{ 0 \leq |ciudades| \yLuego true \} \equiv\\
+    &\equiv\{ res = 0 \land i = 0 \} \implica \{ 0 \leq |ciudades| \} \equiv\\
+    \shortintertext{\parbox{\textwidth}{\centering \small {Como la longitud de ciudades como mínimo es 0, esto también vale}}} \notag
+    &\equiv\{ res = 0 \land i = 0 \} \implica \{ true \} \\
+    \shortintertext{\parbox{\textwidth}{\centering \small {Y finalmente esta expresión es tautología}}} \notag
+\end{align*}
+\indent
+La proposición (b), se prueba de la siguiente manera:
+\begin{align*}
+    \shortintertext{\parbox{\textwidth}{\centering \small {La tripla de Hoare es verdadera si y sólo si}}} \notag
+    \{I \land B \}\\
+     \implica \\
+     WP(Sc, I)\\
+     \shortintertext{\parbox{\textwidth}{\centering \small {Se calcula la WP como}}} \notag
+	W_{1} \equiv WP(res := res + ciudades[i].habitantes ; i := i+1 , I)
+	\shortintertext{\parbox{\textwidth}{\centering \small {Por axioma 3 se tiene}}}
+	W_{1} \equiv WP(res := res + ciudades[i].habitantes, WP(i := i+1, I))
+	\shortintertext{\parbox{\textwidth}{\centering \small {Se calcula el WP anidado}}}
+	W_{2} \equiv WP(i := i+1, I))
+	\shortintertext{\parbox{\textwidth}{\centering \small {Por axioma 1}}}
+	W_{2} \equiv \{ def(i+1) \yLuego I_{i+1}^{i} \}
+	\shortintertext{\parbox{\textwidth}{\centering \small {Luego}}}
+	W_{2} \equiv \{ true \yLuego \invariante{i+1} \}
+	\shortintertext{\parbox{\textwidth}{\centering \small {Que es equivalente a}}}
+	W_{2} \equiv \{ -1 \leq i < |ciudades| \yLuego res = \sum\limits_{j=0}^{i} ciudades[j].habitantes \}
+	\shortintertext{\parbox{\textwidth}{\centering \small {Ahora se puede volver a calcular W1, por axioma 1}}}
+	W_{1} \equiv \{ def(res + ciudades[i].habitantes) \yLuego W_{2 res + ciudades[i].habitantes}^{res} \}
+	\shortintertext{\parbox{\textwidth}{\centering \small {Evaluando}}}
+	W_{1} \equiv \{ 0 \leq i < |ciudades| \yLuego -1 \leq i < |ciudades| \yLuego res + ciudades[i].habitantes = \sum\limits_{j=0}^{i} ciudades[j].habitantes \}
+	\shortintertext{\parbox{\textwidth}{\centering \small {Se opera de la siguiente forma}}}
+	W_{1} \equiv \{ 0 \leq i < |ciudades| \yLuego -1 \leq i < |ciudades| \yLuego res = \sum\limits_{j=0}^{i} ciudades[j].habitantes - ciudades[i].habitantes \}
+	\shortintertext{\parbox{\textwidth}{\centering \small {Como ciudades[i].habitantes es el ultimo termino de la sumatoria}}}
+	W_{1} \equiv \{ 0 \leq i < |ciudades| \yLuego -1 \leq i < |ciudades| \yLuego res = \sum\limits_{j=0}^{i-1} ciudades[j].habitantes \}
+	\shortintertext{\parbox{\textwidth}{\centering \small {Ahora, para el rango de i queda el más fuerte, es decir}}}
+	W_{1} \equiv \{ 0 \leq i < |ciudades| \yLuego res = \sum\limits_{j=0}^{i-1} ciudades[j].habitantes \}
+	\shortintertext{\parbox{\textwidth}{\centering \small {Retomando la implicación de la tripla de Hoare de la proposición (b), ya se puede reemplazar la WP por $W_{1}$}}}
+	\{\invariante{i} \land i < |ciudades| \}\\
+	\implica \\
+	\{ 0 \leq i < |ciudades| \yLuego res = \sum\limits_{j=0}^{i-1} ciudades[j].habitantes \}
+	\shortintertext{\parbox{\textwidth}{\centering \small {De la misma forma que se operó anteriormente, para el rango de i queda lo más fuerte}}}
+	\{ 0 \leq i < |ciudades| \yLuego res = \sum\limits_{j=0}^{i-1} ciudades[j].habitantes \}\\
+	\implica \\
+	\{ 0 \leq i < |ciudades| \yLuego res = \sum\limits_{j=0}^{i-1} ciudades[j].habitantes \}
+	\shortintertext{\parbox{\textwidth}{\centering \small {Como ambos términos son iguales, es tautología, por lo que queda probada la tripla de Hoare}}}
+\end{align*}
+\indent
+La proposición (c), se prueba de la siguiente manera:
+\begin{align*}
+    \{ \invariante{i} \land i \geq |ciudades| \}\\
+     \implica \\
+    \{ res = \sum\limits_{j=0}^{|ciudades| - 1} ciudades[j].habitantes \land i = |ciudades| \}\\
+     \shortintertext{\parbox{\textwidth}{\centering \small {Se unifica el rango de i que queda como}}} \notag
+     \{ res = \sum\limits_{j=0}^{i - 1} ciudades[j].habitantes \land i = |ciudades| \}\\
+     \implica \\
+    \{ res = \sum\limits_{j=0}^{|ciudades| - 1} ciudades[j].habitantes \land i = |ciudades| \}\\
+\shortintertext{\parbox{\textwidth}{\centering \small {Se toma como verdadera la primera parte de la implicación y entonces se puede reemplazar $|ciudades|$ por i}}} \notag
+     \{ res = \sum\limits_{j=0}^{i - 1} ciudades[j].habitantes \land i = |ciudades| \}\\
+     \implica \\
+    \{ res = \sum\limits_{j=0}^{i - 1} ciudades[j].habitantes \land i = |ciudades| \}\\
+	\shortintertext{\parbox{\textwidth}{\centering \small {Como ambos términos son iguales, es tautología}}}
+\end{align*}
+\indent
+Al haberse probado (a), (b), (c) queda demostrado que el ciclo es parcialmente correcto por el teorema del invariante. Ahora, para terminar de probar (2), se demostará la finalización del ciclo con el teorema de terminación:
+\begin{align*}
+    &d.\quad \{ I \land B \land fv = V_{0} \}\quad Sc \quad\{ fv < V_{0} \} \\
+    &e.\quad \{ I \land fv \leq 0 \} \implica \neg B\\
+\end{align*}
+\indent
+La proposición (d), se prueba de la siguiente manera:
+\begin{align*}
+    \shortintertext{\parbox{\textwidth}{\centering \small {La tripla de Hoare es verdadera si y sólo si}}} \notag
+    \{I \land B \land fv = V_{0} \}\\
+     \implica \\
+     WP(Sc, F)\\
+     \shortintertext{\parbox{\textwidth}{\centering \small {Con F =  \{fv $<$ $V_{0}$\}}}} \notag
+	\shortintertext{\parbox{\textwidth}{\centering \small {Se calcula la WP como}}} \notag
+	W_{1} \equiv WP(res := res + ciudades[i].habitantes ; i := i+1 , F)
+	\shortintertext{\parbox{\textwidth}{\centering \small {Por axioma 3 se tiene}}}
+	W_{1} \equiv WP(res := res + ciudades[i].habitantes, WP(i := i+1, F))
+	\shortintertext{\parbox{\textwidth}{\centering \small {Se calcula el WP anidado}}}
+	W_{2} \equiv WP(i := i+1, F))
+	\shortintertext{\parbox{\textwidth}{\centering \small {Por axioma 1}}}
+	W_{2} \equiv \{ def(i+1) \yLuego F_{i+1}^{i} \}
+	\shortintertext{\parbox{\textwidth}{\centering \small {Luego}}}
+	W_{2} \equiv \{ true \yLuego |ciudades| - i - 1 < V_{0} \}
+	\shortintertext{\parbox{\textwidth}{\centering \small {Finalmente}}}
+	W_{2} \equiv \{ |ciudades| - i - 1 < V_{0} \}
+	\shortintertext{\parbox{\textwidth}{\centering \small {Ahora se puede volver a calcular W1, por axioma 1}}}
+	W_{1} \equiv \{ def(res + ciudades[i].habitantes) \yLuego W_{2 res + ciudades[i].habitantes}^{res} \}
+	\shortintertext{\parbox{\textwidth}{\centering \small {Evaluando}}}
+	W_{1} \equiv \{ true \yLuego |ciudades| - i - 1 < V_{0} \}
+	\shortintertext{\parbox{\textwidth}{\centering \small {Entonces}}}
+	W_{1} \equiv \{ |ciudades| - i - 1 < V_{0} \}
+	\shortintertext{\parbox{\textwidth}{\centering \small {Retomando la implicación de la tripla de Hoare de la proposición (d), ya se puede reemplazar la WP por $W_{1}$}}}
+	\{I \land B \land fv = V_{0} \}\\
+     \implica \\
+      \{ |ciudades| - i - 1 < V_{0} \}\\
+\shortintertext{\parbox{\textwidth}{\centering \small {Si la primera parte de la implicación es verdadera, se puede reemplazar $V_{0}$ por fv}}}
+	\{I \land B \land fv = V_{0} \}\\
+     \implica \\
+      \{ |ciudades| - i - 1 < fv \}\\
+\shortintertext{\parbox{\textwidth}{\centering \small {Evaluando}}}
+	\{I \land B \land fv = V_{0} \}\\
+     \implica \\
+      \{ |ciudades| - i - 1 < |ciudades| - i \}\\
+\shortintertext{\parbox{\textwidth}{\centering \small {Operando la desigualdad, puedo restar a ambos lados por $|ciudades| - i$ }}}
+	\{I \land B \land fv = V_{0} \}\\
+     \implica \\
+      \{ - 1 < 0 \}\\
+\shortintertext{\parbox{\textwidth}{\centering \small {Luego}}}
+	\{I \land B \land fv = V_{0} \}\\
+     \implica \\
+      \{ true \}\\
+\shortintertext{\parbox{\textwidth}{\centering \small {Que es tautología}}}
+\end{align*}
+\indent
+La proposición (e), se prueba de la siguiente manera:
+\begin{align*}
+    \{ I \land |ciudades| - i \leq 0 \} \implica i \geq |ciudades|
+    \shortintertext{\parbox{\textwidth}{\centering \small {Si la primera parte de la implicación es verdadera, se puede ver que  $|ciudades| - i \leq 0$ es verdadero, entonces como}}}
+    |ciudades| - i \leq 0 \equiv i \geq |ciudades|
+    \shortintertext{\parbox{\textwidth}{\centering \small {Tenemos finalmente}}}
+	\{ I \land |ciudades| - i \leq 0 \} \implica true
+ \shortintertext{\parbox{\textwidth}{\centering \small {Que es tautología}}}
+\end{align*}
+\indent
+Al haberse probado (d) y (e) queda demostrado que el ciclo finaliza por el teorema de finalización, y por lo tanto, como ya se probó el teorema del invariante, queda probado (2).
+
+\indent
+En conclusión, por monotonía, al haber probado (1), (2) y (3) queda demostrada la correctitud del programa según la lógica de la tripla de Hoare.
+
+\end{document}
