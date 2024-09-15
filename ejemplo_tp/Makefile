@@ -1,14 +1,14 @@
 pdf:
-	pdflatex ejemplo_tp_grupal.tex
+	pdflatex TP.tex
 
 ignorando-errores:
-	pdflatex -interaction=nonstopmode ejemplo_tp_grupal.tex
+	pdflatex -interaction=nonstopmode TP.tex
 
 bibliografia:
-	pdflatex ejemplo_tp_grupal.tex
+	pdflatex TP.tex
 	bibtex ejemplo_tp_grupal.aux
-	pdflatex ejemplo_tp_grupal.tex
-	pdflatex ejemplo_tp_grupal.tex
+	pdflatex TP.tex
+	pdflatex TP.tex
 
 clean:
 	- rm -f *.log *.soc *.toc *.aux *.out  main.idx *.bbl *.bbg *.dvi *.blg *.lof *.nav *.snm *~
