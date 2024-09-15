@@ -216,11 +216,9 @@ La proposición (a), se prueba de la siguiente manera:
 \indent
 La proposición (b), se prueba de la siguiente manera:
 \begin{align*}
-    \shortintertext{\parbox{\textwidth}{\centering \small {La tripla de Hoare es verdadera si y sólo si}}} \notag
-    \{I \land B \}\\
-     \implica \\
-     WP(Sc, I)\\
-     \shortintertext{\parbox{\textwidth}{\centering \small {Se calcula la WP como}}} \notag
+    \shortintertext{\parbox{\textwidth}{\centering \small {La tripla de Hoare es verdadera si y sólo si}}}
+   \{I \land B \} \implica WP(Sc, I)\\
+     \shortintertext{\parbox{\textwidth}{\centering \small {Se calcula la WP como}}}
 	W_{1} \equiv WP(res := res + ciudades[i].habitantes ; i := i+1 , I)
 	\shortintertext{\parbox{\textwidth}{\centering \small {Por axioma 3 se tiene}}}
 	W_{1} \equiv WP(res := res + ciudades[i].habitantes, WP(i := i+1, I))
