@@ -1,0 +1,120 @@
+\documentclass[10pt,a4paper,fleqn]{article}
+
+\input{AEDmacros}
+\usepackage{caratula}
+\usepackage{xcolor}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\begin{document}
+En conclusión, por monotonía, al haber probado (1), (2) y (3) queda demostrada la correctitud del programa según la lógica de la tripla de Hoare.
+\subsection{}
+Para demostrar que el valor devuelto es mayor a 50.000, definimos una nueva postcondición del programa. 
+\vspace{2,5mm}\\
+Q \equiv \{ res = $\small \displaystyle \sum_{j=0}^{|ciudades|-1} ciudades[j].habitantes \land res >$ 50.000 \} \equiv \{$\small \displaystyle \sum_{j=0}^{|ciudades|-1} ciudades[j].habitantes >$ 50.000 \}\\
+Debemos probar la validez de la tripla de Hoare \{P\}S\{Q\}, para eso probaremos:
+\begin{enumerate}
+    \item P \implica wp($S_1;S_2, P_c$)
+    \item $P_c$ \implica wp(while...,$Q_c$)
+    \item $Q_c$ \implica Q
+\end{enumerate}
+Por monotonía, esto nos permite demostrar que P \implica wp(S,Q) es verdadera. Definimos una nueva precondición y postcondición del ciclo, e invariante.\\
+\begin{eqnarray}
+    Q_c &\equiv& \{\small \displaystyle \sum_{j=0}^{|ciudades|-1} ciudades[j].habitantes > 50.000\} \notag \\
+    P_c &\equiv& \{ \existe[unalinea]{k}{\ent}{0 \leq k< |ciudades| \yLuego ciudades[k].habitantes >  50.000 }\land \notag \\ 
+    & & \paraTodo[unalinea]{j}{\ent}{0\leq j < |ciudades| \implicaLuego ciudades[j].habitantes \geq 0} \land res=0 \land i=0 \} \notag \\
+    I &\equiv& \{ 0 \leq i \leq |ciudades| \yLuego (res = \small \displaystyle \sum_{j=0}^{i-1} ciudades[j].habitantes) \land \notag \\
+    & & \existe[unalinea]{k}{\ent}{0 \leq k< |ciudades| \yLuego ciudades[k].habitantes >  50.000 }\land \paraTodo[unalinea]{j}{\ent}{0 \leq j < |ciudades| \implicaLuego ciudades[j].habitantes \geq 0} \} \notag 
+\end{eqnarray}
+\item 1) P \implica $wp(S_1;S_2, P_c$)\\ \vspace{-10mm}
+
+\begin{eqnarray}
+    wp(S_1;S_2, P_c) &\overset{Ax3}{\equiv}& wp(S_1; wp(S_2,\ P_c))  \notag \\
+    &\equiv& wp(S_1, wp(i:=0,\ P_c)) \notag \\
+    &\overset{Ax1}{\equiv}& wp(S_1, def(0) \yLuego \text{$P_c$}_{0}^{i}) \notag \\
+    &\equiv& wp(S_1, True \yLuego \existe[unalinea]{k}{\ent}{0 \leq k< |ciudades| \yLuego ciudades[k].habitantes >  50.000 }\land \notag \\ & & \paraTodo[unalinea]{j}{\ent}{0\leq j < |ciudades| \implicaLuego ciudades[j].habitantes \geq 0}\ \land \ res=0\ \land \ \textcolor{blue}{0=0}) \notag \\
+     &\equiv& wp(res:= 0, \existe[unalinea]{k}{\ent}{0 \leq k< |ciudades| \yLuego ciudades[k].habitantes >  50.000 }\land \notag \\ & & \paraTodo[unalinea]{j}{\ent}{0\leq j < |ciudades| \implicaLuego ciudades[j].habitantes \geq 0}\ \land \ res=0\ \land \ \textcolor{blue}{True}) \notag \\
+     &\overset{Ax1}{\equiv}& \existe[unalinea]{k}{\ent}{0 \leq k< |ciudades| \yLuego ciudades[k].habitantes >  50.000 }\land \notag \\ & & \paraTodo[unalinea]{j}{\ent}{0\leq j < |ciudades| \implicaLuego ciudades[j].habitantes \geq 0}\ \land \ \textcolor{blue}{0=0}) \notag \\
+       wp(S_1;S_2, P_c) &\equiv& \existe[unalinea]{k}{\ent}{0 \leq k< |ciudades| \yLuego ciudades[k].habitantes >  50.000 }\land \notag \\ & & \paraTodo[unalinea]{j}{\ent}{0\leq j < |ciudades| \implicaLuego ciudades[j].habitantes \geq 0} \notag 
+\end{eqnarray}
+Luego, P \implica \ $wp(S_1;S_2, P_c$) es cierto pues ambos cuantificadores están idénticos en la WP y P. 
+
+\item 2) $P_c$\implica \ $wp(while...,Q_c$)\\
+Debemos probar la correctitud y terminación del ciclo.
+\item 1.\ $P_c\implica I$ \\
+
+\begin{itemize}
+    \item \parbox[t]{\textwidth}{ Ambos cuantificadores, \existe[unalinea]{k}{\ent}{0 \leq k< |ciudades| \yLuego ciudades[k].habitantes >  50.000 } y \\ \paraTodo[unalinea]{j}{\ent}{0\leq j < |ciudades| \implicaLuego ciudades[j].habitantes \geq 0}están idénticos en I y P_c} 
+    \item \parbox[t]{\textwidth}{res = 0 \land \ i = 0 \implica res = $\small \displaystyle \sum_{j=0}^{i-1} ciudades[j].habitantes$ = $\small \displaystyle \sum_{j=0}^{-1} ciudades[j].habitantes$ = 0 por el rango vacío }
+     \item \parbox[t]{\textwidth}{i = 0 \implica \ 0 \leq 0 \leq |ciudades|}
+\end{itemize}
+\item 2.\ $\{I \land B\}S_c\{I\}$  \\Para probar que la tripla de Hoare es válida, vemos que $\{I \land B\} \implica wp(S_c,I)$ sea cierto.
+El cuerpo del ciclo tiene dos instrucciones, que llamaremos $S_c1$ y $S_c2$. 
+
+\begin{eqnarray}
+    wp(S_c1;S_c2, I) &\overset{Ax3}{\equiv}& wp(S_c1, wp(S_c2, I)) \notag \\
+     &\equiv&  wp(S_c1, wp(i:= i+1, I))\notag \\
+      &\overset{Ax1}{\equiv}& wp(S_c1,def(i+1) \yLuego I_{i}^{i+1})\notag \\
+      &\equiv&  wp(S_c1, (def(i) \land def(1)) \yLuego 0 \leq \textcolor{blue}{i+1} \leq |ciudades| \yLuego (res = \small \displaystyle \sum_{j=0}^{\textcolor{blue}{i+1}-1} ciudades[j].habitantes \land \notag \\ & & \existe[unalinea]{k}{\ent}{0 \leq k< |ciudades| \yLuego ciudades[k].habitantes >  50.000 }\land \notag \\ & & \paraTodo[unalinea]{j}{\ent}{0\leq j < |ciudades| \implicaLuego ciudades[j].habitantes \geq 0})) \notag \\
+       &\equiv& wp(res:= res + ciudades[i].habitantes, (True \land True) \yLuego \ 0 \leq i+1 \leq |ciudades| \ yLuego \notag \\ & & (res = \small \displaystyle \sum_{j=0}^{i} ciudades[j].habitantes \land \notag \\ & & \existe[unalinea]{k}{\ent}{0 \leq k< |ciudades| \yLuego ciudades[k].habitantes >  50.000 }\land \notag \\ & & \paraTodo[unalinea]{j}{\ent}{0\leq j < |ciudades| \implicaLuego ciudades[j].habitantes \geq 0})) \notag \\
+       &\overset{Ax1}{\equiv}& ((def(res) \land def(ciudades) \land def(i))\yLuego 0 \leq i < |ciudades|) \yLuego (0 \leq i+1 \leq |ciudades|) \ \land \notag  \\ & & \textcolor{blue}{res + ciudades[i].habitantes} = \small \displaystyle \sum_{j=0}^{i} ciudades[j].habitantes \land \\ & & \existe[unalinea]{k}{\ent}{0 \leq k< |ciudades| \yLuego ciudades[k].habitantes >  50.000 }\land \notag \\ & & \paraTodo[unalinea]{j}{\ent}{0\leq j < |ciudades| \implicaLuego ciudades[j].habitantes \geq 0} \notag \\
+        &\equiv& (0 \leq i < |ciudades| \ \land \ 0 \leq i+1 \leq |ciudades|) \ \yLuego (res= \small \displaystyle \sum_{j=0}^{i-1} ciudades[j].habitantes \land \\ & & \existe[unalinea]{k}{\ent}{0 \leq k< |ciudades| \yLuego ciudades[k].habitantes >  50.000 }\land \notag \\ & & \paraTodo[unalinea]{j}{\ent}{0\leq j < |ciudades| \implicaLuego ciudades[j].habitantes \geq 0}) \notag \\
+        wp(S_c1;S_c2, I)  &\equiv& (0 \leq i <|ciudades|) \yLuego (res= \small \displaystyle \sum_{j=0}^{i-1} ciudades[j].habitantes \land \notag \\ & & \existe[unalinea]{k}{\ent}{0 \leq k< |ciudades| \yLuego ciudades[k].habitantes >  50.000 }\land \notag \\ & & \paraTodo[unalinea]{j}{\ent}{0\leq j < |ciudades| \implicaLuego ciudades[j].habitantes \geq 0}) \notag 
+\end{eqnarray}
+(2) Si despejamos: $res = \small \displaystyle \sum_{j=0}^{i} ciudades[j].habitantes \ - ciudades[i].habitantes = \small \displaystyle \sum_{j=0}^{i-1} ciudades[j].habitantes$\\
+(3) $(0 \leq i < |ciudades| \ \land \ 0 \leq i+1 \leq |ciudades|)\equiv(0 \leq i < |ciudades| \ \land \ -1 \leq i \leq |ciudades|-1)\\
+\implica 0 \leq i <|ciudades|$\\
+Ahora vemos la implicación: \\
+\begin{itemize}
+    \item \parbox[t]{\textwidth}{$I \land \ B \implica 0 \leq i \leq |ciudades| \land i < |ciudades| \implica 0 \leq i < |ciudades|$}
+    \item \parbox[t]{\textwidth}{Tanto la sumatoria como los cuantificadores están idénticos en I y WP.}
+\end{itemize}
+
+\item 3. $I \land \neg B \implica Q_c$\\
+\begin{eqnarray}
+    I \land \neg B &\equiv& 0 \leq i \leq |ciudades| \yLuego (res = \small \displaystyle \sum_{j=0}^{i-1} ciudades[j].habitantes \land \notag \\ & &\existe[unalinea]{k}{\ent}{0 \leq k< |ciudades| \yLuego ciudades[k].habitantes >  50.000 }\land \notag \\ & & \paraTodo[unalinea]{j}{\ent}{0\leq j < |ciudades| \implicaLuego ciudades[j].habitantes \geq 0}) \land \neg(i<|ciudades|) \\
+    &\equiv& i=|ciudades| \yLuego (res = \small \displaystyle \sum_{j=0}^{i-1} ciudades[j].habitantes \land \notag \\ & &\existe[unalinea]{k}{\ent}{0 \leq k< |ciudades| \yLuego ciudades[k].habitantes >  50.000 }\land \notag \\ & & \paraTodo[unalinea]{j}{\ent}{0\leq j < |ciudades| \implicaLuego ciudades[j].habitantes \geq 0}) \notag 
+ \end{eqnarray}
+ (4) $0 \leq i \leq |ciudades| \land \neg(i<|ciudades|)\equiv 0 \leq i \leq |ciudades| \land i\geq |ciudades| \implica i = |ciudades|$\\
+ Veamos la implicación:
+\begin{itemize}
+    \item \parbox[t]{\textwidth}{Como asumimos el antecedente $I \land \neg B$ cierto, podemos reemplazar en la sumatoria.\\ res = $\small \displaystyle \sum_{j=0}^{\textcolor{blue}{|ciudades|}-1} ciudades[j].habitantes$\\
+    Además, si reescribimos la sumatoria: \\
+    res = $\small \displaystyle \sum_{j=0}^{k-1} ciudades[j].habitantes \ + ciudades[k].habitantes + \small \displaystyle \sum_{j=k+1}^{|ciudades|-1} ciudades[j].habitantes$\\
+    De esta forma, sabemos por asumir el antecedente verdadero:\\
+    \paraTodo[unalinea]{j}{\ent}{0\leq j < |ciudades| \implicaLuego (ciudades[j].habitantes \geq 0 \land \\ \existe[unalinea]{k}{\ent}{0 \leq k< |ciudades| \yLuego (ciudades[k].habitantes >  50.000 \land \\res = $\small \displaystyle \sum_{j=0}^{k-1} ciudades[j].habitantes \ + ciudades[k].habitantes + \small \displaystyle \sum_{j=k+1}^{|ciudades|-1} ciudades[j].habitantes$)})} \\\\ }
+    Veamos que los limites de las sumatorias nunca se indefinen:
+    \item \parbox[t]{\textwidth}{Como $k <|ciudades| \implica k-1<|ciudades|$ se ve que nunca se indefine ningun termino de la sumatoria. \\
+    \paraTodo[unalinea]{j}{\ent}{0\leq j < |ciudades| \implicaLuego ciudades[j].habitantes \geq 0} \implica  \displaystyle \sum_{j=0}^{k-1} ciudades[j].habitantes \geq 0}
+     \item \parbox[t]{\textwidth}{Como $0\leq k \implica 0\leq k+1, y \ k<|ciudades| \implica k+1\leq|ciudades|$, se ve que nunca se indefine ningun termino de \\ la sumatoria(a lo mucho el rango es vacío si $k+1= |ciudades|$). \\
+      \paraTodo[unalinea]{j}{\ent}{0\leq j < |ciudades| \implicaLuego ciudades[j].habitantes \geq 0} \implica  \displaystyle \sum_{j=k+1}^{|ciudades|-1} ciudades[j].habitantes \geq 0}
+       \item \parbox[t]{\textwidth}{Así, si vale $I \land \neg B$:\\
+       \implica res \geq 0 +  ciudades[k].habitantes + 0 \\
+       Y como \existe[unalinea]{k}{\ent}{0 \leq k< |ciudades| \yLuego (ciudades[k].habitantes >  50.000 \land \\res = $\small \displaystyle \sum_{j=0}^{k-1} ciudades[j].habitantes \ + ciudades[k].habitantes + \small \displaystyle \sum_{j=k+1}^{|ciudades|-1} ciudades[j].habitantes$)} \\
+       \implica \ $res > 50.000 \equiv $\small \displaystyle \sum_{j=0}^{|ciudades|-1} ciudades[j].habitantes > 50.000$ }
+\end{itemize}
+Así, $I \land \neg B \implica Q_c$ es cierto\\
+\item 4. $\{I \land B \land fv=v_0\}S_c\{fv<v_0\}$\\Para probar que la tripla de Hoare es válida, vemos que $(I \land B \land fv=v_0) \implica wp(S_c,fv<v_0)$ sea cierto.\\
+\begin{eqnarray}
+    wp(S_c1;S_c2, fv<v_0) &\overset{Ax3}{\equiv}& wp(S_c1, wp(S_c2, fv<v_0)) \notag \\
+     &\equiv&  wp(S_c1, wp(i:= i+1, \textcolor{blue}{|ciudades|-i < v_0}))\notag \\
+    &\overset{Ax1}{\equiv}& wp(S_c1, def(i+1) \yLuego (|ciudades|- (\textcolor{blue}{i+1}) < v_0)) \notag \\
+    &\equiv& wp(res:= res + ciudades[i].habitantes, (def(i) \land def(1)) \yLuego (|ciudades| -i - 1 < v_0)\notag \\
+    &\overset{Ax1}{\equiv}& (def(res) \land def(ciudades) \land def(i))\yLuego 0 \leq i < |ciudades| \yLuego (|ciudades| -i -1 < v_0) \notag \\
+    wp(S_c1;S_c2, fv<v_0) &\equiv& 0 \leq i < |ciudades| \land |ciudades| -i -1 < v_0 \notag 
+\end{eqnarray}
+Ahora vemos la implicación: \\
+\begin{itemize}
+    \item \parbox[t]{\textwidth}{$(I \land B \land fv=v_0) \implica 0 \leq i \leq |ciudades| \ \land \ i < |ciudades|\ \implica 0 \leq i < |ciudades| $}
+    \item \parbox[t]{\textwidth}{$(I \land B \land fv=v_0) \implica |ciudades|-1=v_0 \implica |ciudades| -i -1 < v_0 = |ciudades| -i -1 < \textcolor{blue}{|ciudades| -i} \Leftrightarrow -1<0$}
+\end{itemize}
+\item 5. $I \land fv\leq 0 \implica \neg B$
+\begin{itemize}
+    \item \parbox[t]{\textwidth}{I \land fv\leq 0 \implica 0\leq i \leq |ciudades| \land \textcolor{blue}{|ciudades|-i\leq 0} \equiv 0 \leq i \leq|ciudades| \land |ciudades| \leq i \implica i=|ciudades|\\ \implica \neg(i<|caminos|)\equiv\neg B}
+\end{itemize}
+
+Al probar la correctitud y terminación del ciclo, probamos $P_c$\implica \ $wp(while...,Q_c$).\\
+\item 3) $Q_c \implica Q$\\
+Es clara la implicancia pues la postcondición del ciclo y la del programa son idénticas.
+
+\noindent En conclusión, como (1), (2), (3), (4) y (5) fueron probados con esta nueva postcondición queda a su vez demostrado que el valor del resultado es mayor a 50000 como queriamos ver.
+\end{document}

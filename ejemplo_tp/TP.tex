@@ -28,6 +28,20 @@
 \maketitle
 
 \section{Especificación}
+Predicados comunes:
+\begin{itemize}
+    \item \pred{esMatriz}{m : \TLista{\TLista{\ent}}}{\paraTodo[unalinea]{a,b}{\TLista{\ent}}{(a \neq b \land a \in m \land b \in m ) \implica (\longitud a = \longitud b \land \longitud a > 0)}}
+
+    \item \pred{esMatrizCuadrada}{m : \TLista{\TLista{\ent}}}{esMatriz(m) \land \paraTodo[unalinea]{s}{\TLista{\ent}}{s \in m \implica (\longitud s = \longitud m)}}
+
+    \item \pred{esSimétrica}{m : \TLista{\TLista{\ent}}}{esMatrizCuadrada(m) \yLuego \paraTodo[unalinea]{i,j}{\ent}{0 \leq i,j < \longitud m \implicaLuego (m[i][j] = m[j][i])}}
+
+    \item \pred{diagonalDeCeros}{m : \TLista{\TLista{\ent}}}{esMatrizCuadrada(m) \yLuego \paraTodo[unalinea]{i}{\ent}{0 \leq i < \longitud m \implicaLuego (m[i][i] = 0)}}
+
+    \item \pred {esUnCamino}{s : \TLista{\ent \times \ent}, distancias : \TLista{\TLista{\ent}}, desde : \ent, hasta : \ent}{(s \neq \listavacia) \yLuego (s[0]_0 = desde \land s[\longitud s -1]_1 = hasta) \land \paraTodo[unalinea]{i}{\ent}{0 \leq i < \longitud s -1 \implicaLuego (s[i]_1 = s[i+1]_0)} \land \\ \paraTodo[unalinea]{i}{\ent}{0 \leq i < \longitud s \implicaLuego hayCaminoDirecto(distancias, s[i]_0, s[i]_1)}}
+\end{itemize}
+
+
 \subsection{grandesCiudades}
 \begin{proc}{grandesCiudades}{\In ciudades : \TLista{Ciudad}}{\TLista{Ciudad}}
     \requiere{True}
@@ -41,7 +55,7 @@
     \requiere{tienenMismosNombres(menoresDeCiudades, mayoresDeCiudades)}
     \asegura{|res| = |menoresDeCiudades|}
     \asegura{ tienenMismosNombres(res, menoresDeCiudades) }
-    \asegura{\paraTodo[unalinea]{x}{Ciudad}{x \in res \implica \existe[unalinea]{i,j}{Ciudad}{i \in menoresDeCiudad \land  j \in mayoresDeCiudad} \land  x.nombre = i.nombre = j.nombre \land x.habitantes = i.habitantes + j.habitantes}}
+    \asegura{\paraTodo[unalinea]{x}{Ciudad}{x \in res \implica \existe[unalinea]{i,j}{Ciudad}{i \in menoresDeCiudades \land  j \in mayoresDeCiudades} \land  x.nombre = i.nombre = j.nombre \land x.habitantes = i.habitantes + j.habitantes}}
 \end{proc}
 
 \pred{tienenMismosNombres}{ciudades1,ciudades2 : \TLista{Ciudad}}{\paraTodo[unalinea]{c}{Ciudad}{esCiudad(c,ciudades1) \iff esCiudad(c,ciudades2)}}
@@ -54,33 +68,21 @@
 
 \begin{proc}{hayCamino}{\In distancias : \TLista{\TLista{\ent}}, \In desde : \ent, \In hasta : \ent}{Bool}
     \requiere{esMatrizCuadrada(distancias)\land esSimétrica(distancias) \land diagonalDeCeros(distancias)}
-    \asegura{res = True \iff \existe[unalinea]{s}{\TLista{\ent}}{esUnCamino(s,distancias,desde,hasta}}
+    \asegura{res = True \iff \existe[unalinea]{s}{\TLista{\ent \times \ent}}{esUnCamino(s,distancias,desde,hasta)}}
 \end{proc}
-
-    \pred{esMatriz}{m : \TLista{\TLista{\ent}}}{\paraTodo[unalinea]{a,b}{\TLista{\ent}}{(a \neq b \land a \in m \land b \in m ) \implica (\longitud a = \longitud b \land \longitud a > 0)}}
-
-    \pred{esMatrizCuadrada}{m : \TLista{\TLista{\ent}}}{esMatriz(m) \land \paraTodo[unalinea]{s}{\TLista{\ent}}{s \in m \implica (\longitud s = \longitud m})}
-
-    \pred{esSimétrica}{m : \TLista{\TLista{\ent}}}{esMatrizCuadrada(m) \yLuego \paraTodo[unalinea]{i,j}{\ent}{0 \leq i,j < \longitud m \implicaLuego (m[i][j] = m[j][i])}}
-
-    \pred{diagonalDeCeros}{m : \TLista{\TLista{\ent}}}{esMatrizCuadrada(m) \yLuego \paraTodo[unalinea]{i}{\ent}{0 \leq i < \longitud m \implicaLuego (m[i][i] = 0)}}
-    
 %Arreglar la longitud de distancias
     \pred{hayCaminoDirecto}{distancias : \TLista{\TLista{\ent}}, desde : \ent, hasta : \ent}{(0 \leq desde,hasta < \longitud {distancias}) \yLuego (distancias[desde][hasta] \neq 0)}
-    
-%Arreglar lista vacia
-    \pred {esUnCamino}{s : \TLista{\ent \times \ent}, distancias : \TLista{\TLista{\ent}}, desde : \ent, hasta : \ent}{(s \neq \listavacia) \yLuego (s[0]_0 = desde \land s[\longitud s -1]_1 = hasta) \land \paraTodo[unalinea]{i}{\ent}{0 \leq i < \longitud s -1 \implicaLuego (s[i]_1 = s[i+1]_0)} \land \paraTodo[unalinea]{i}{\ent}{0 \leq i < \longitud s \implicaLuego hayCaminoDirecto(distancias, s[i]_0, s[i]_1)}}
-    
+        
 \subsection{cantidadCaminosNSaltos}
 \begin{proc}{cantidadCaminosNSaltos}{\Inout conexión : \TLista{\TLista{\ent}}, \In n : \ent}{}
-	\requiere {n > 0 \land conexión = $conexión_{0}$}
+	\requiere {n > 0 \land conexión = $ conexión_{0}$}
 	\requiere {esMatrizCuadrada(conexión) \land esDeOrdenUno(conexión)}
 	\asegura {\existe[unalinea]{s}{\TLista{\TLista{\TLista{\ent}}}}{|s| = n \yLuego sonMatricesHastaOrdenN(s, n, $conexión_{0}$) \yLuego conexión = s[|s| - 1]}}
 \end{proc}
 
-\pred{esDeOrdenUno}{m : \TLista{\TLista{\ent}}}{\paraTodo[unalinea]{i,j}{\ent}{0 \leq i,j < |m| \implicaLuego m[i][j] = 0 \lor m[i][j] = 1}}
+\pred{esDeOrdenUno}{m : \TLista{\TLista{\ent}}}{\paraTodo[unalinea]{i,j}{\ent}{0 \leq i,j < |m| \implicaLuego (m[i][j] = 0 \lor m[i][j] = 1)}}
 \pred{sonMatricesHastaOrdenN}{s : \TLista{\TLista{\TLista{\ent}}}, n : \ent, m : \TLista{\TLista{\ent}}}{\paraTodo[unalinea]{i}{\ent}{0 < i < |s| \implicaLuego esProductoDeMatrices(s[i], s[i-1], m)}}
-\pred{esProductoDeMatrices}{m,$m_{1},m_{2}$ : \TLista{\TLista{\ent}}}{\paraTodo[unalinea]{i,j}{\ent}{0 \leq i,j < |m| \implicaLuego m[i][j] = \sum\limits_{k=0}^{|m| - 1} m_{1}[i][k] * m_{2}[k][j]}}
+\pred{esProductoDeMatrices}{s,m',m : \TLista{\TLista{\ent}}}{\paraTodo[unalinea]{i,j}{\ent}{0 \leq i,j < |s| \implicaLuego s[i][j] = \sum\limits_{k=0}^{|s| - 1} m'[i][k] * m[k][j]}}
 
 \subsection{caminoMinimo}
 
@@ -146,7 +148,7 @@ $ P \implica wp(S_1;S_2, P_c) \equiv P \implica True \equiv True$\\
  \item 3) Continuamos probando $Q_c$ \implica Q\\
  Es clara la implicancia pues la postocndición del ciclo y del programa son idénticas.\\
  
- \item 2) Finalmente, para probar $P_c$ \implica wp(while...,$Q_c$), se debe demostrar la correctitud del ciclo mediante Teorema del Invariante, y la terminación del mismo mediante el Teo. de Terminación.\\
+ \item 2) Finalmente, para probar $P_c$ \implica wp(while...,$Q_c$), se debe demostrar la correctitud del ciclo mediante Teorema del Invariante, y la terminación del mismo mediante el Teorema de Terminación.\\
  Teorema del Invariante \\
  \begin{itemize}
     \item[a.] $P_c \implica I$ 
@@ -164,7 +166,7 @@ Como la longitud de una secuencia siempre es 0 o mayor:\\
 
 \item b. La tripla de Hoare, $\{I \land B\}S_c\{I\}$, es válida si y sólo si $I \land B\ \implica wp(S_c,I)$.El cuerpo del ciclo tiene dos instrucciones, que llamaremos $S_c1$ y $S_c2$.         
 \begin{eqnarray}
-    wp(S_c1;S_c2, P_c) &\overset{Ax3}{\equiv}& wp(S_1; wp(S_2,\ P_c))  \notag \\
+    wp(S_c1;S_c2, P_c) &\overset{Ax3}{\equiv}& wp(S_c1; wp(S_c2,\ P_c))  \notag \\
     &\equiv& wp(res:= res + ciudades[i].habitantes, wp(i:= i + 1,I) \notag
     \end{eqnarray}
    Calculamos la wp anidada $W_2 = wp(i:= i + 1,I)$
@@ -197,18 +199,70 @@ Como probamos $I \land B\ \implica wp(S_c,I)$, la tripla de Hoare es válida.\\
 \begin{eqnarray}
     I \land \neg B &\equiv& 0 \leq i \leq |ciudades| \yLuego (res = \small \displaystyle \sum_{j=0}^{i-1} ciudades[j].habitantes) \land \neg(i<|ciudades|) \\
     &\equiv& i=|ciudades| \yLuego (res = \small \displaystyle \sum_{j=0}^{i-1} ciudades[j].habitantes) \notag 
- \end{eqnarray}
+\end{eqnarray}
  (1) $0 \leq i \leq |ciudades| \land \neg(i<|ciudades|)\equiv 0 \leq i \leq |ciudades| \land i\geq |ciudades| \implica i = |ciudades|$\\
  
  Veamos la implicación, reemplazando $i = |ciudades|$:\\
 $ I \land B \implica i = |ciudades| \implica res = \small \displaystyle \sum_{j=0}^{\textcolor{blue}{|ciudades|}-1} ciudades[j].habitantes$\\
 Así, $I \land \neg B \implica Q_c$ es cierto\\ 
 Al haberse probado (a),(b) y (c) queda demostrado que el ciclo es parcialmente correcto respecto la especificación. Ahora, se demuestra la finalización del ciclo.\\
- \begin{itemize}
+\newpage
+Teorema de Terminación
+\begin{itemize}
     \item[d.] $\{I \land B \land fv = v_0\}S_c \{fv<v_0\}$ 
     \item[e.] $I \land fv \leq 0 \implica \neg B$
 \end{itemize}
+\indent
+La proposición (d), se prueba de la siguiente manera: \\
+\small \text{Definimos F =  \{fv $<$ $V_{0}$\}} \notag \\
+\small \text{La tripla de Hoare es verdadera si y sólo si:} \notag
+\begin{alignat*}{1}
+    &\{I \land B \land fv = V_{0} \}\implica WP(Sc, F) 
+\end{alignat*}
+\text{Se calcula la WP como} \notag 
+\begin{alignat*}{1}
+	W_{1} &\equiv WP(res := res + ciudades[i].habitantes ; i := i+1 , F) \\ 
+    &\overset{Ax3}{\equiv} WP(res := res + ciudades[i].habitantes, \textcolor{blue}{WP(i := i+1, F)})
+\end{alignat*}
+\text{Se calcula el WP anidado}
+\begin{alignat*}{1}
+	& \textcolor{blue}{WP(i := i+1, F)} \overset{Ax1}{\equiv} \{ def(i+1) \yLuego F_{i+1}^{i} \} \equiv \{ true \yLuego |ciudades| - i - 1 < V_{0} \} \\
+    &\equiv \{\overbrace{\textcolor{blue}{|ciudades| - i - 1 < V_{0}}}^{W_2}\}
+\end{alignat*}
+\text{Reemplazamos en la original}
+\begin{alignat*}{1}
+    W_{1} &\equiv WP(res := res + ciudades[i].habitantes, \textcolor{blue}{W_2}) \\
+    &\overset{Ax1}{\equiv} WP(def(res + ciudades[i].habitantes) \yLuego W_{2 res + ciudades[i].habitantes}^{res}) \\
+    &\equiv  \{ true \yLuego |ciudades| - i - 1 < V_{0} \} \equiv W_1
+\end{alignat*}
+&\text{Retomando la implicación de la tripla de Hoare de la proposición (d), ya se puede reemplazar la WP por $W_{1}$}
+\begin{alignat*}{1}
+	&\{I \land B \land fv = V_{0} \} \implica \{ |ciudades| - i - 1 < V_{0} \} \\
+    &\text{Asumimos el antecedente verdadero, por lo que solo dependemos del consecuente} \\
+	& \{ |ciudades| - i - 1 < fv \} \underset{V_0 = fv}{\equiv} \{ |ciudades| - i - 1 < |ciudades| - i \} \equiv \{ - 1 < 0 \} \\
+	&\text{Luego} \\
+	&\{I \land B \land fv = V_{0} \} \implica \{ true \} \\
+	&\text{Que es tautología}
+\end{alignat*}
+\indent
 
+\noindent La proposición (e), se prueba de la siguiente manera:
+\begin{alignat*}{1}
+    &\{ I \land |ciudades| - i \leq 0 \} \implica i \geq |ciudades| \\
+    &{\parbox{\textwidth}{ {Si operamos un poco}}} \\
+    &|ciudades| - i \leq 0 \equiv i \geq |ciudades| \\
+    &{\parbox{\textwidth}{ {Luego}}} \\
+	&\{ I \land i \geq |ciudades| \} \implica i \geq |ciudades| \\
+    &\text{Asumimos el antecedente verdadero y nos queda} \\
+    &i \geq |ciudades| \underset{i \geq |ciudades|}{\equiv} True \\
+    &{\parbox{\textwidth}{ {Que es tautología}}} 
+\end{alignat*}
+
+
+\noindent \text{Al haberse probado (d) y (e) queda demostrado que el ciclo finaliza por el teorema de finalización, y por lo tanto,} \\ 
+\noindent \text{como ya se probó el teorema del invariante, queda probado (2).}\\
+
+\noindent En conclusión, por monotonía, al haber probado (1), (2) y (3) queda demostrada la correctitud del programa según la lógica de la tripla de Hoare.
 \subsection{}
 Para demostrar que el valor devuelto es mayor a 50.000, definimos una nueva postcondición del programa. 
 \vspace{2,5mm}\\
@@ -235,7 +289,7 @@ Por monotonía, esto nos permite demostrar que P \implica wp(S,Q) es verdadera. 
     &\overset{Ax1}{\equiv}& wp(S_1, def(0) \yLuego \text{$P_c$}_{0}^{i}) \notag \\
     &\equiv& wp(S_1, True \yLuego \existe[unalinea]{k}{\ent}{0 \leq k< |ciudades| \yLuego ciudades[k].habitantes >  50.000 }\land \notag \\ & & \paraTodo[unalinea]{j}{\ent}{0\leq j < |ciudades| \implicaLuego ciudades[j].habitantes \geq 0}\ \land \ res=0\ \land \ \textcolor{blue}{0=0}) \notag \\
      &\equiv& wp(res:= 0, \existe[unalinea]{k}{\ent}{0 \leq k< |ciudades| \yLuego ciudades[k].habitantes >  50.000 }\land \notag \\ & & \paraTodo[unalinea]{j}{\ent}{0\leq j < |ciudades| \implicaLuego ciudades[j].habitantes \geq 0}\ \land \ res=0\ \land \ \textcolor{blue}{True}) \notag \\
-     &\overset{Ax1}{\equiv}& \existe[unalinea]{k}{\ent}{0 \leq k< |ciudades| \yLuego ciudades[k].habitantes >  50.000 }\land \notag \\ & & \paraTodo[unalinea]{j}{\ent}{0\leq j < |ciudades| \implicaLuego ciudades[j].habitantes \geq 0}\ \land \ \textcolor{blue}{0=0})) \notag \\
+     &\overset{Ax1}{\equiv}& \existe[unalinea]{k}{\ent}{0 \leq k< |ciudades| \yLuego ciudades[k].habitantes >  50.000 }\land \notag \\ & & \paraTodo[unalinea]{j}{\ent}{0\leq j < |ciudades| \implicaLuego ciudades[j].habitantes \geq 0}\ \land \ \textcolor{blue}{0=0}) \notag \\
        wp(S_1;S_2, P_c) &\equiv& \existe[unalinea]{k}{\ent}{0 \leq k< |ciudades| \yLuego ciudades[k].habitantes >  50.000 }\land \notag \\ & & \paraTodo[unalinea]{j}{\ent}{0\leq j < |ciudades| \implicaLuego ciudades[j].habitantes \geq 0} \notag 
 \end{eqnarray}
 Luego, P \implica \ $wp(S_1;S_2, P_c$) es cierto pues ambos cuantificadores están idénticos en la WP y P. 
@@ -317,4 +371,6 @@ Ahora vemos la implicación: \\
 Al probar la correctitud y terminación del ciclo, probamos $P_c$\implica \ $wp(while...,Q_c$).\\
 \item 3) $Q_c \implica Q$\\
 Es clara la implicancia pues la postcondición del ciclo y la del programa son idénticas.
+
+\noindent En conclusión, como (1), (2), (3), (4) y (5) fueron probados con esta nueva postcondición queda a su vez demostrado que el valor del resultado es mayor a 50000 como queriamos ver.
 \end{document}
