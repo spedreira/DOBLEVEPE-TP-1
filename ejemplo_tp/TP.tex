@@ -42,7 +42,7 @@ Predicados comunes:
 
     \item \pred{diagonalDeCeros}{m : \TLista{\TLista{\ent}}}{esMatrizCuadrada(m) \yLuego \paraTodo[unalinea]{i}{\ent}{0 \leq i < \longitud m \implicaLuego (m[i][i] = 0)}}
 
-    \item \pred {esUnCamino}{s : \TLista{\ent \times \ent}, distancias : \TLista{\TLista{\ent}}, desde : \ent, hasta : \ent}{(s \neq \listavacia) \yLuego (s[0]_0 = desde \land s[\longitud s -1]_1 = hasta) \land \paraTodo[unalinea]{i}{\ent}{0 \leq i < \longitud s -1 \implicaLuego (s[i]_1 = s[i+1]_0)} \land \\ \paraTodo[unalinea]{i}{\ent}{0 \leq i < \longitud s \implicaLuego hayCaminoDirecto(distancias, s[i]_0, s[i]_1)}}
+    \item \pred {esUnCamino}{s : \TLista{\ent \times \ent}, distancias : \TLista{\TLista{\ent}}, desde : \ent, hasta : \ent}{(\longitud s > 0) \yLuego (s[0]_0 = desde \land s[\longitud s -1]_1 = hasta) \land \paraTodo[unalinea]{i}{\ent}{0 \leq i < \longitud s -1 \implicaLuego (s[i]_1 = s[i+1]_0)} \land \\ \paraTodo[unalinea]{i}{\ent}{0 \leq i < \longitud s \implicaLuego hayCaminoDirecto(distancias, s[i]_0, s[i]_1)}}
 \end{itemize}
 
 
