@@ -30,6 +30,10 @@
 \section{Especificación}
 Predicados comunes:
 \begin{itemize}
+    \item \pred{habitantesPositivos}{ciudades : \TLista{Ciudad}}{\paraTodo[unalinea]{c}{Ciudad}{c \in ciudades \implica c.habitantes \geq 0}}
+
+    \item \pred{noHayRepetidos}{ciudades : \TLista{Ciudad}}{\paraTodo[unalinea]{i,j}{\ent}{(0 \leq i,j < |ciudades| \land i \neq j) \implicaLuego ciudades[i].habitantes \neq ciudades[j].habitantes}}
+
     \item \pred{esMatriz}{m : \TLista{\TLista{\ent}}}{\paraTodo[unalinea]{a,b}{\TLista{\ent}}{(a \neq b \land a \in m \land b \in m ) \implica (\longitud a = \longitud b \land \longitud a > 0)}}
 
     \item \pred{esMatrizCuadrada}{m : \TLista{\TLista{\ent}}}{esMatriz(m) \land \paraTodo[unalinea]{s}{\TLista{\ent}}{s \in m \implica (\longitud s = \longitud m)}}
@@ -44,13 +48,15 @@ Predicados comunes:
 
 \subsection{grandesCiudades}
 \begin{proc}{grandesCiudades}{\In ciudades : \TLista{Ciudad}}{\TLista{Ciudad}}
-    \requiere{True}
+    \requiere{habitantesPositivos(ciudades) \land noHayRepetidos(ciudades)}
     \asegura{\paraTodo[unalinea]{x}{Ciudad}{x \in res \iff x \in ciudades \land x.habitantes > 50000 }}
 \end{proc}
 
 
 \subsection{sumaDeHabitantes}
 \begin{proc}{sumaDeHabitantes}{\In menoresDeCiudades : \TLista{Ciudad}, \In mayoresDeCiudades : \TLista{Ciudad}}{\TLista{Ciudad}}
+    \requiere{habitantesPositivos(menoresDeCiudades) \land noHayRepetidos(menoresDeCiudades)}
+    \requiere{habitantesPositivos(mayoresDeCiudades) \land noHayRepetidos(mayoresDeCiudades)}
     \requiere{|menoresDeCiudades| = |mayoresDeCiudades| }
     \requiere{tienenMismosNombres(menoresDeCiudades, mayoresDeCiudades)}
     \asegura{|res| = |menoresDeCiudades|}
@@ -77,10 +83,11 @@ Predicados comunes:
 \begin{proc}{cantidadCaminosNSaltos}{\Inout conexión : \TLista{\TLista{\ent}}, \In n : \ent}{}
 	\requiere {n > 0 \land conexión = $ conexión_{0}$}
 	\requiere {esMatrizCuadrada(conexión) \land esDeOrdenUno(conexión)}
-	\asegura {\existe[unalinea]{s}{\TLista{\TLista{\TLista{\ent}}}}{|s| = n \yLuego sonMatricesHastaOrdenN(s, n, $conexión_{0}$) \yLuego conexión = s[|s| - 1]}}
+	\asegura {\existe[unalinea]{s}{\TLista{\TLista{\TLista{\ent}}}}{|s| = n \yLuego matricesEnTamaño(s, conexion_0) \yLuego sonMatricesHastaOrdenN(s, n, $conexión_{0}$) \yLuego conexión = s[|s| - 1]}}
 \end{proc}
 
 \pred{esDeOrdenUno}{m : \TLista{\TLista{\ent}}}{\paraTodo[unalinea]{i,j}{\ent}{0 \leq i,j < |m| \implicaLuego (m[i][j] = 0 \lor m[i][j] = 1)}}
+\pred{matricesEnTamaño}{s : \TLista{\TLista{\TLista{\ent}}}, c : \TLista{\TLista{\ent}}}{\paraTodo[unalinea]{m}{\TLista{\TLista{\ent}}}{m \in s \implicaLuego esMatrizCuadrada(m) \land |m| = |c|}}
 \pred{sonMatricesHastaOrdenN}{s : \TLista{\TLista{\TLista{\ent}}}, n : \ent, m : \TLista{\TLista{\ent}}}{\paraTodo[unalinea]{i}{\ent}{0 < i < |s| \implicaLuego esProductoDeMatrices(s[i], s[i-1], m)}}
 \pred{esProductoDeMatrices}{s,m',m : \TLista{\TLista{\ent}}}{\paraTodo[unalinea]{i,j}{\ent}{0 \leq i,j < |s| \implicaLuego s[i][j] = \sum\limits_{k=0}^{|s| - 1} m'[i][k] * m[k][j]}}
 
@@ -214,49 +221,49 @@ Teorema de Terminación
 \end{itemize}
 \indent
 La proposición (d), se prueba de la siguiente manera: \\
-\small \text{Definimos F =  \{fv $<$ $V_{0}$\}} \notag \\
-\small \text{La tripla de Hoare es verdadera si y sólo si:} \notag
-\begin{alignat*}{1}
+\small \text{Definimos F =  \{fv $<$ $V_{0}$\}}  \\
+\small \text{La tripla de Hoare es verdadera si y sólo si:} 
+\begin{align*}
     &\{I \land B \land fv = V_{0} \}\implica WP(Sc, F) 
-\end{alignat*}
-\text{Se calcula la WP como} \notag 
-\begin{alignat*}{1}
-	W_{1} &\equiv WP(res := res + ciudades[i].habitantes ; i := i+1 , F) \\ 
-    &\overset{Ax3}{\equiv} WP(res := res + ciudades[i].habitantes, \textcolor{blue}{WP(i := i+1, F)})
-\end{alignat*}
+\end{align*}
+\text{Se calcula la WP como}  
+\begin{align*}
+	W_{1} &\equiv WP(res := res + ciudades[i].habitantes ; i := i+1 , F)  \\ 
+    &\overset{Ax3}{\equiv} WP(res := res + ciudades[i].habitantes, \textcolor{blue}{WP(i := i+1, F)}) 
+\end{align*}
 \text{Se calcula el WP anidado}
-\begin{alignat*}{1}
-	& \textcolor{blue}{WP(i := i+1, F)} \overset{Ax1}{\equiv} \{ def(i+1) \yLuego F_{i+1}^{i} \} \equiv \{ true \yLuego |ciudades| - i - 1 < V_{0} \} \\
-    &\equiv \{\overbrace{\textcolor{blue}{|ciudades| - i - 1 < V_{0}}}^{W_2}\}
-\end{alignat*}
+\begin{align*}
+	& \textcolor{blue}{WP(i := i+1, F)} \overset{Ax1}{\equiv} \{ def(i+1) \yLuego F_{i+1}^{i} \} \equiv \{ true \yLuego |ciudades| - i - 1 < V_{0} \}  \\
+    &\equiv \{\overbrace{\textcolor{blue}{|ciudades| - i - 1 < V_{0}}}^{W_2}\} 
+\end{align*}
 \text{Reemplazamos en la original}
-\begin{alignat*}{1}
-    W_{1} &\equiv WP(res := res + ciudades[i].habitantes, \textcolor{blue}{W_2}) \\
-    &\overset{Ax1}{\equiv} WP(def(res + ciudades[i].habitantes) \yLuego W_{2 res + ciudades[i].habitantes}^{res}) \\
-    &\equiv  \{ true \yLuego |ciudades| - i - 1 < V_{0} \} \equiv W_1
-\end{alignat*}
-&\text{Retomando la implicación de la tripla de Hoare de la proposición (d), ya se puede reemplazar la WP por $W_{1}$}
-\begin{alignat*}{1}
-	&\{I \land B \land fv = V_{0} \} \implica \{ |ciudades| - i - 1 < V_{0} \} \\
-    &\text{Asumimos el antecedente verdadero, por lo que solo dependemos del consecuente} \\
-	& \{ |ciudades| - i - 1 < fv \} \underset{V_0 = fv}{\equiv} \{ |ciudades| - i - 1 < |ciudades| - i \} \equiv \{ - 1 < 0 \} \\
-	&\text{Luego} \\
-	&\{I \land B \land fv = V_{0} \} \implica \{ true \} \\
-	&\text{Que es tautología}
-\end{alignat*}
+\begin{align*}
+    W_{1} &\equiv WP(res := res + ciudades[i].habitantes, \textcolor{blue}{W_2})  \\
+    &\overset{Ax1}{\equiv} WP(def(res + ciudades[i].habitantes) \yLuego W_{2 res + ciudades[i].habitantes}^{res})  \\
+    &\equiv  \{ true \yLuego |ciudades| - i - 1 < V_{0} \} \equiv W_1 
+\end{align*}
+&\text{Retomando la implicación de la tripla de Hoare de la proposición (d), ya se puede reemplazar la WP por $W_{1}$} 
+\begin{align*}
+	&\{I \land B \land fv = V_{0} \} \implica \{ |ciudades| - i - 1 < V_{0} \}  \\
+    &\text{Asumimos el antecedente verdadero, por lo que solo dependemos del consecuente}  \\
+	& \{ |ciudades| - i - 1 < fv \} \underset{V_0 = fv}{\equiv} \{ |ciudades| - i - 1 < |ciudades| - i \} \equiv \{ - 1 < 0 \}  \\
+	&\text{Luego}  \\
+	&\{I \land B \land fv = V_{0} \} \implica \{ true \}  \\
+	&\text{Que es tautología} 
+\end{align*}
 \indent
 
 \noindent La proposición (e), se prueba de la siguiente manera:
-\begin{alignat*}{1}
-    &\{ I \land |ciudades| - i \leq 0 \} \implica i \geq |ciudades| \\
-    &{\parbox{\textwidth}{ {Si operamos un poco}}} \\
-    &|ciudades| - i \leq 0 \equiv i \geq |ciudades| \\
-    &{\parbox{\textwidth}{ {Luego}}} \\
-	&\{ I \land i \geq |ciudades| \} \implica i \geq |ciudades| \\
-    &\text{Asumimos el antecedente verdadero y nos queda} \\
-    &i \geq |ciudades| \underset{i \geq |ciudades|}{\equiv} True \\
-    &{\parbox{\textwidth}{ {Que es tautología}}} 
-\end{alignat*}
+\begin{align*}
+    &\{ I \land |ciudades| - i \leq 0 \} \implica i \geq |ciudades|  \\
+    &{\parbox{\textwidth}{ {Si operamos un poco}}}  \\
+    &|ciudades| - i \leq 0 \equiv i \geq |ciudades|  \\
+    &{\parbox{\textwidth}{ {Luego}}}  \\
+	&\{ I \land i \geq |ciudades| \} \implica i \geq |ciudades|  \\
+    &\text{Asumimos el antecedente verdadero y nos queda}  \\
+    &i \geq |ciudades| \underset{i \geq |ciudades|}{\equiv} True  \\
+    &{\parbox{\textwidth}{ {Que es tautología}}}  
+\end{align*}
 
 
 \noindent \text{Al haberse probado (d) y (e) queda demostrado que el ciclo finaliza por el teorema de finalización, y por lo tanto,} \\ 
