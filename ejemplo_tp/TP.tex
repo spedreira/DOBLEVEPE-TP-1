@@ -99,7 +99,7 @@ Predicados comunes:
 	\requiere{esMatrizCuadrada(distancias) \land esSimetrica(distancias) \land todosNoNegativos(distancias) \\ \land diagonalDeCeros(distancias)}
 	
 	% Asegura de mi ejercicio
-	\asegura{res \neq  \listavacia \iff (\existe[unalinea]{s}{\TLista{\ent \times \ent}}{esElCaminoMinimo(s, distancias, origen, destino) \land (res[0] = s[0] _0) \land (res[|res| - 1] = s[|s|-1] _1) \land \paraTodo[unalinea]{i}{\ent}{0 \leq i < |s| - 1 \implicaLuego res[i+1] = s[i] _1}})}
+	\asegura{|res| > 0 \iff (\existe[unalinea]{s}{\TLista{\ent \times \ent}}{esElCaminoMinimo(s, distancias, origen, destino) \land (res[0] = s[0] _0) \land (res[|res| - 1] = s[|s|-1] _1) \land \paraTodo[unalinea]{i}{\ent}{0 \leq i < |s| - 1 \implicaLuego res[i+1] = s[i] _1}})}
 	
 \end{proc}
 % Funcion auxiliar sumaDistancias
