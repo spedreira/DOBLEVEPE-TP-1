@@ -34,9 +34,9 @@ Predicados comunes:
 
     \item \pred{noHayRepetidos}{ciudades : \TLista{Ciudad}}{\paraTodo[unalinea]{i,j}{\ent}{(0 \leq i,j < |ciudades| \land i \neq j) \implicaLuego ciudades[i].habitantes \neq ciudades[j].habitantes}}
 
-    \item \pred{esMatriz}{m : \TLista{\TLista{\ent}}}{\paraTodo[unalinea]{a,b}{\TLista{\ent}}{(a \neq b \land a \in m \land b \in m ) \implica (\longitud a = \longitud b \land \longitud a > 0)}}
+    \item \pred{esMatrizNoVacia}{m : \TLista{\TLista{\ent}}}{\paraTodo[unalinea]{a,b}{\TLista{\ent}}{(a \neq b \land a \in m \land b \in m ) \implica (\longitud a = \longitud b \land \longitud a > 0)}}
 
-    \item \pred{esMatrizCuadrada}{m : \TLista{\TLista{\ent}}}{esMatriz(m) \land \paraTodo[unalinea]{s}{\TLista{\ent}}{s \in m \implica (\longitud s = \longitud m)}}
+    \item \pred{esMatrizCuadrada}{m : \TLista{\TLista{\ent}}}{esMatrizNoVacia(m) \land \paraTodo[unalinea]{s}{\TLista{\ent}}{s \in m \implica (\longitud s = \longitud m)}}
 
     \item \pred{esSimétrica}{m : \TLista{\TLista{\ent}}}{esMatrizCuadrada(m) \yLuego \paraTodo[unalinea]{i,j}{\ent}{0 \leq i,j < \longitud m \implicaLuego (m[i][j] = m[j][i])}}
 
@@ -82,8 +82,8 @@ Predicados comunes:
 \subsection{cantidadCaminosNSaltos}
 \begin{proc}{cantidadCaminosNSaltos}{\Inout conexión : \TLista{\TLista{\ent}}, \In n : \ent}{}
 	\requiere {n > 0 \land conexión = $ conexión_{0}$}
-	\requiere {esMatrizCuadrada(conexión) \land esDeOrdenUno(conexión)}
-	\asegura {\existe[unalinea]{s}{\TLista{\TLista{\TLista{\ent}}}}{|s| = n \yLuego matricesEnTamaño(s, conexion_0) \yLuego sonMatricesHastaOrdenN(s, n, $conexión_{0}$) \yLuego conexión = s[|s| - 1]}}
+	\requiere {esMatrizCuadrada(conexión) \yLuego esDeOrdenUno(conexión)}
+	\asegura {\existe[unalinea]{s}{\TLista{\TLista{\TLista{\ent}}}}{|s| = n \yLuego matricesEnTamaño(s, conexion_0) \\ \yLuego sonMatricesHastaOrdenN(s, n, $conexión_{0}$) \yLuego conexión = s[|s| - 1]}}
 \end{proc}
 
 \pred{esDeOrdenUno}{m : \TLista{\TLista{\ent}}}{\paraTodo[unalinea]{i,j}{\ent}{0 \leq i,j < |m| \implicaLuego (m[i][j] = 0 \lor m[i][j] = 1)}}
