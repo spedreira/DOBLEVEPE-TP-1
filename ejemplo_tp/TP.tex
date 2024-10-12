@@ -104,10 +104,10 @@ Predicados comunes:
 \end{proc}
 % Funcion auxiliar sumaDistancias
 %Arreglar suma
-\aux{sumaDistancias}{s: \TLista{\ent \times \ent}}{\ent}{$\sum_{i = 0}^{|s|-1}$ s[i]_0 + s[i]_1}
+\aux{sumaDistancias}{s: \TLista{\ent \times \ent}, distancias: \TLista{\TLista{\ent}}}{\ent}{$\sum_{i = 0}^{|s|-1}$ distancias[s[i]_0][s[i]_1]}
 
 % Predicado esElCaminoMinimo
-\pred{esElCaminoMinimo}{s: \TLista{\ent \times \ent}, distancias: \TLista{\TLista{\ent}, origen: \ent, destino: \ent}}{(esUnCamino(s, distancias, origen, destino)) \land \paraTodo[unalinea]{i}{\TLista{\ent \times \ent}}{esUnCamino(i, distancias, origen, destino) \implicaLuego sumaDistancias(s) \leq sumaDistancias(i)}}
+\pred{esElCaminoMinimo}{s: \TLista{\ent \times \ent}, distancias: \TLista{\TLista{\ent}, origen: \ent, destino: \ent}}{(esUnCamino(s, distancias, origen, destino)) \land \paraTodo[unalinea]{i}{\TLista{\ent \times \ent}}{esUnCamino(i, distancias, origen, destino) \implicaLuego sumaDistancias(s, distancias) \leq sumaDistancias(i, distancias)}}
 
 \pred{todosNoNegativos}{m: \TLista{\TLista{\ent}}}{\paraTodo[unalinea]{s}{\TLista{\ent}}{s \in m \implica (\paraTodo[unalinea]{n}{\ent}{n \in s \implica n \geq 0)}}}
 
